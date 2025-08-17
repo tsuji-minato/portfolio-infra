@@ -16,7 +16,7 @@ resource "aws_s3_bucket_website_configuration" "portfolio_site" {
   }
 
   error_document {
-    key = "error.html"
+    key = "404.html"
   }
 }
 

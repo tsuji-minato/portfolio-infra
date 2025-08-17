@@ -1,5 +1,6 @@
 # ログ出力用のapply
 
 ```powershell
-terraform apply -auto-approve | tee logs/apply-$(date +%Y%m%d-%H%M%S).log
+$timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+terraform apply -auto-approve | Tee-Object -FilePath "logs/apply-$timestamp.log"
 ```
