@@ -36,8 +36,7 @@ resource "aws_s3_bucket_policy" "public_read" {
   })
 }
 
-# アクセスログ設定
-
+# ログ保存用S3バケット（CloudFrontログにも対応）
 resource "aws_s3_bucket" "access_log" {
   bucket        = "minato-portfolio-logs-20250831"
   force_destroy = false
@@ -48,6 +47,21 @@ resource "aws_s3_bucket" "access_log" {
   }
 }
 
+resource "aws_s3_bucket_ownership_controls" "access_log_controls" {
+  bucket = aws_s3_bucket.access_log.id
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+# ACLを許可（CloudFrontログに必要）
+resource "aws_s3_bucket_acl" "access_log_acl" {
+  bucket = aws_s3_bucket.access_log.id
+  acl    = "log-delivery-write"
+}
+
+# ログ配信用バケットポリシー
 resource "aws_s3_bucket_policy" "access_log_policy" {
   bucket = aws_s3_bucket.access_log.id
 
@@ -60,19 +74,17 @@ resource "aws_s3_bucket_policy" "access_log_policy" {
         Principal = {
           Service = "logging.s3.amazonaws.com"
         },
-        Action = [
-          "s3:PutObject"
-        ],
+        Action   = ["s3:PutObject"],
         Resource = "${aws_s3_bucket.access_log.arn}/*",
         Condition = {
           StringEquals = {
             "aws:SourceAccount" = data.aws_caller_identity.current.account_id
-          },
+          }
         }
       }
     ]
   })
 }
 
-# AWSアカウント情報を取得するdataリソース
+# AWSアカウント情報取得用
 data "aws_caller_identity" "current" {}

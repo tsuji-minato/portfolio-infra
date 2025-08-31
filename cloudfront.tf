@@ -16,6 +16,12 @@ resource "aws_cloudfront_distribution" "portfolio_cdn" {
     }
   }
 
+  logging_config {
+    include_cookies = false
+    bucket          = aws_s3_bucket.access_log.bucket_domain_name # ログ出力先
+    prefix          = "cloudfront-access/"                        # プレフィックス
+  }
+
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
@@ -35,7 +41,7 @@ resource "aws_cloudfront_distribution" "portfolio_cdn" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true  # 独自ドメイン不要な場合はこれでOK
+    cloudfront_default_certificate = true # 独自ドメイン不要な場合はこれでOK
   }
 
   restrictions {
