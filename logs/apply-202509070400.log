@@ -1,0 +1,349 @@
+Terraform will perform the following actions:
+
+  # aws_security_group.aurora_sg will be created
+  + resource "aws_security_group" "aurora_sg" {
+      + arn                    = (known after apply)
+      + description            = "Aurora SG for Oura ETL"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = [
+                  + "10.0.0.0/16",
+                ]
+              + from_port        = 5432
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 5432
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + name                   = "oura-aurora-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + region                 = "us-east-1"
+      + revoke_rules_on_delete = false
+      + tags_all               = (known after apply)
+      + vpc_id                 = "vpc-013a8d3b69b6b0c34"
+    }
+
+  # module.oura_etl.aws_db_subnet_group.aurora_subnets will be created
+  + resource "aws_db_subnet_group" "aurora_subnets" {
+      + arn                     = (known after apply)
+      + description             = "Managed by Terraform"
+      + id                      = (known after apply)
+      + name                    = "aurora-pg-subnets"
+      + name_prefix             = (known after apply)
+      + region                  = "us-east-1"
+      + subnet_ids              = [
+          + "subnet-06cd2f6c0b80f6231",
+          + "subnet-0b0c8e42936953192",
+        ]
+      + supported_network_types = (known after apply)
+      + tags_all                = (known after apply)
+      + vpc_id                  = (known after apply)
+    }
+
+  # module.oura_etl.aws_rds_cluster.aurora will be created
+  + resource "aws_rds_cluster" "aurora" {
+      + allocated_storage                     = (known after apply)
+      + apply_immediately                     = (known after apply)
+      + arn                                   = (known after apply)
+      + availability_zones                    = (known after apply)
+      + backup_retention_period               = (known after apply)
+      + ca_certificate_identifier             = (known after apply)
+      + ca_certificate_valid_till             = (known after apply)
+      + cluster_identifier                    = (known after apply)
+      + cluster_identifier_prefix             = (known after apply)
+      + cluster_members                       = (known after apply)
+      + cluster_resource_id                   = (known after apply)
+      + cluster_scalability_type              = (known after apply)
+      + copy_tags_to_snapshot                 = false
+      + database_insights_mode                = (known after apply)
+      + database_name                         = "ouradb"
+      + db_cluster_parameter_group_name       = (known after apply)
+      + db_subnet_group_name                  = "aurora-pg-subnets"
+      + db_system_id                          = (known after apply)
+      + delete_automated_backups              = true
+      + enable_global_write_forwarding        = false
+      + enable_http_endpoint                  = false
+      + enable_local_write_forwarding         = false
+      + endpoint                              = (known after apply)
+      + engine                                = "aurora-postgresql"
+      + engine_lifecycle_support              = (known after apply)
+      + engine_mode                           = "provisioned"
+      + engine_version                        = "15.4"
+      + engine_version_actual                 = (known after apply)
+      + hosted_zone_id                        = (known after apply)
+      + iam_roles                             = (known after apply)
+      + id                                    = (known after apply)
+      + kms_key_id                            = (known after apply)
+      + master_password                       = (sensitive value)
+      + master_password_wo                    = (write-only attribute)
+      + master_user_secret                    = (known after apply)
+      + master_user_secret_kms_key_id         = (known after apply)
+      + master_username                       = "ourapguser"
+      + monitoring_interval                   = (known after apply)
+      + monitoring_role_arn                   = (known after apply)
+      + network_type                          = (known after apply)
+      + performance_insights_kms_key_id       = (known after apply)
+      + performance_insights_retention_period = (known after apply)
+      + port                                  = (known after apply)
+      + preferred_backup_window               = (known after apply)
+      + preferred_maintenance_window          = (known after apply)
+      + reader_endpoint                       = (known after apply)
+      + region                                = "us-east-1"
+      + skip_final_snapshot                   = false
+      + storage_encrypted                     = (known after apply)
+      + storage_type                          = (known after apply)
+      + tags_all                              = (known after apply)
+      + vpc_security_group_ids                = (known after apply)
+
+      + serverlessv2_scaling_configuration {
+          + max_capacity             = 1
+          + min_capacity             = 0.5
+          + seconds_until_auto_pause = (known after apply)
+        }
+    }
+
+  # module.oura_etl.aws_rds_cluster_instance.aurora_instance will be created
+  + resource "aws_rds_cluster_instance" "aurora_instance" {
+      + apply_immediately                     = (known after apply)
+      + arn                                   = (known after apply)
+      + auto_minor_version_upgrade            = true
+      + availability_zone                     = (known after apply)
+      + ca_cert_identifier                    = (known after apply)
+      + cluster_identifier                    = (known after apply)
+      + copy_tags_to_snapshot                 = false
+      + db_parameter_group_name               = (known after apply)
+      + db_subnet_group_name                  = (known after apply)
+      + dbi_resource_id                       = (known after apply)
+      + endpoint                              = (known after apply)
+      + engine                                = "aurora-postgresql"
+      + engine_version                        = "15.4"
+      + engine_version_actual                 = (known after apply)
+      + force_destroy                         = false
+      + id                                    = (known after apply)
+      + identifier                            = "aurora-pg-slv2-1"
+      + identifier_prefix                     = (known after apply)
+      + instance_class                        = "db.serverless"
+      + kms_key_id                            = (known after apply)
+      + monitoring_interval                   = 0
+      + monitoring_role_arn                   = (known after apply)
+      + network_type                          = (known after apply)
+      + performance_insights_enabled          = (known after apply)
+      + performance_insights_kms_key_id       = (known after apply)
+      + performance_insights_retention_period = (known after apply)
+      + port                                  = (known after apply)
+      + preferred_backup_window               = (known after apply)
+      + preferred_maintenance_window          = (known after apply)
+      + promotion_tier                        = 0
+      + publicly_accessible                   = false
+      + region                                = "us-east-1"
+      + storage_encrypted                     = (known after apply)
+      + tags_all                              = (known after apply)
+      + writer                                = (known after apply)
+    }
+
+  # module.oura_etl.aws_secretsmanager_secret.aurora_pg_url will be created
+  + resource "aws_secretsmanager_secret" "aurora_pg_url" {
+      + arn                            = (known after apply)
+      + force_overwrite_replica_secret = false
+      + id                             = (known after apply)
+      + name                           = "AURORA_PG_URL"
+      + name_prefix                    = (known after apply)
+      + policy                         = (known after apply)
+      + recovery_window_in_days        = 30
+      + region                         = "us-east-1"
+      + tags_all                       = (known after apply)
+
+      + replica (known after apply)
+    }
+
+  # module.oura_etl.aws_secretsmanager_secret.oura_pat will be created
+  + resource "aws_secretsmanager_secret" "oura_pat" {
+      + arn                            = (known after apply)
+      + force_overwrite_replica_secret = false
+      + id                             = (known after apply)
+      + name                           = "OURA_PAT"
+      + name_prefix                    = (known after apply)
+      + policy                         = (known after apply)
+      + recovery_window_in_days        = 30
+      + region                         = "us-east-1"
+      + tags_all                       = (known after apply)
+
+      + replica (known after apply)
+    }
+
+  # module.oura_etl.aws_secretsmanager_secret_version.aurora_pg_url_ver will be created
+  + resource "aws_secretsmanager_secret_version" "aurora_pg_url_ver" {
+      + arn                  = (known after apply)
+      + has_secret_string_wo = (known after apply)
+      + id                   = (known after apply)
+      + region               = "us-east-1"
+      + secret_id            = (known after apply)
+      + secret_string        = (sensitive value)
+      + secret_string_wo     = (write-only attribute)
+      + version_id           = (known after apply)
+      + version_stages       = (known after apply)
+    }
+
+  # module.oura_etl.aws_secretsmanager_secret_version.oura_pat_ver will be created
+  + resource "aws_secretsmanager_secret_version" "oura_pat_ver" {
+      + arn                  = (known after apply)
+      + has_secret_string_wo = (known after apply)
+      + id                   = (known after apply)
+      + region               = "us-east-1"
+      + secret_id            = (known after apply)
+      + secret_string        = (sensitive value)
+      + secret_string_wo     = (write-only attribute)
+      + version_id           = (known after apply)
+      + version_stages       = (known after apply)
+    }
+
+  # module.oura_etl.aws_security_group.aurora_sg will be created
+  + resource "aws_security_group" "aurora_sg" {
+      + arn                    = (known after apply)
+      + description            = "Aurora PostgreSQL"
+      + egress                 = (known after apply)
+      + id                     = (known after apply)
+      + ingress                = (known after apply)
+      + name                   = "aurora-pg-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + region                 = "us-east-1"
+      + revoke_rules_on_delete = false
+      + tags_all               = (known after apply)
+      + vpc_id                 = "vpc-013a8d3b69b6b0c34"
+    }
+
+  # module.oura_etl.aws_security_group.lambda_sg will be created
+  + resource "aws_security_group" "lambda_sg" {
+      + arn                    = (known after apply)
+      + description            = "Lambda -> Aurora"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = (known after apply)
+      + name                   = "lambda-aurora-client-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + region                 = "us-east-1"
+      + revoke_rules_on_delete = false
+      + tags_all               = (known after apply)
+      + vpc_id                 = "vpc-013a8d3b69b6b0c34"
+    }
+
+  # module.oura_etl.aws_security_group_rule.aurora_ingress_from_lambda will be created
+  + resource "aws_security_group_rule" "aurora_ingress_from_lambda" {
+      + from_port                = 5432
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + region                   = "us-east-1"
+      + security_group_id        = (known after apply)
+      + security_group_rule_id   = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 5432
+      + type                     = "ingress"
+    }
+
+  # module.oura_etl.random_password.db_password will be created
+  + resource "random_password" "db_password" {
+      + bcrypt_hash = (sensitive value)
+      + id          = (known after apply)
+      + length      = 24
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + numeric     = true
+      + result      = (sensitive value)
+      + special     = true
+      + upper       = true
+    }
+
+Plan: 12 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+module.oura_etl.random_password.db_password: Creating...
+module.oura_etl.random_password.db_password: Creation complete after 0s [id=none]
+module.oura_etl.aws_secretsmanager_secret.aurora_pg_url: Creating...
+module.oura_etl.aws_db_subnet_group.aurora_subnets: Creating...
+module.oura_etl.aws_secretsmanager_secret.oura_pat: Creating...
+module.oura_etl.aws_security_group.aurora_sg: Creating...
+module.oura_etl.aws_security_group.lambda_sg: Creating...
+aws_security_group.aurora_sg: Creating...
+module.oura_etl.aws_secretsmanager_secret.aurora_pg_url: Creation complete after 1s [id=arn:aws:secretsmanager:us-east-1:685490905234:secret:AURORA_PG_URL-qRWhMc]
+module.oura_etl.aws_secretsmanager_secret.oura_pat: Creation complete after 1s [id=arn:aws:secretsmanager:us-east-1:685490905234:secret:OURA_PAT-tKhNN9]
+module.oura_etl.aws_secretsmanager_secret_version.oura_pat_ver: Creating...
+module.oura_etl.aws_secretsmanager_secret_version.oura_pat_ver: Creation complete after 1s [id=arn:aws:secretsmanager:us-east-1:685490905234:secret:OURA_PAT-tKhNN9|terraform-20250906185329024800000003]
+module.oura_etl.aws_db_subnet_group.aurora_subnets: Creation complete after 2s [id=aurora-pg-subnets]
+module.oura_etl.aws_security_group.aurora_sg: Creation complete after 4s [id=sg-0b15a38470cb7b7fd]
+aws_security_group.aurora_sg: Creation complete after 5s [id=sg-08178f7060a127c8f]
+module.oura_etl.aws_rds_cluster.aurora: Creating...
+module.oura_etl.aws_rds_cluster.aurora: Still creating... [00m10s elapsed]
+module.oura_etl.aws_rds_cluster.aurora: Still creating... [00m20s elapsed]
+module.oura_etl.aws_rds_cluster.aurora: Still creating... [00m30s elapsed]
+module.oura_etl.aws_rds_cluster.aurora: Creation complete after 34s [id=tf-20250906185333334000000004]
+module.oura_etl.aws_secretsmanager_secret_version.aurora_pg_url_ver: Creating...
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Creating...
+module.oura_etl.aws_secretsmanager_secret_version.aurora_pg_url_ver: Creation complete after 1s [id=arn:aws:secretsmanager:us-east-1:685490905234:secret:AURORA_PG_URL-qRWhMc|terraform-20250906185408271400000005]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [00m10s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [00m20s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [00m30s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [00m40s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [00m50s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [01m00s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [01m10s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [01m20s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [01m30s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [01m40s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [01m50s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [02m00s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [02m10s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [02m20s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [02m30s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [02m40s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [02m50s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [03m00s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [03m10s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [03m20s elapsed]
+module.oura_etl.aws_rds_cluster_instance.aurora_instance: Still creating... [03m30s elapsed]
