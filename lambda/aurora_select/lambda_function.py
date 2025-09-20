@@ -1,53 +1,54 @@
+import os
 import json
 import boto3
-import psycopg2
-import os
 
-def lambda_handler(event, context):
-    secret_name = os.environ['AURORA_PG_URL_SECRET_NAME']
-    region_name = "us-east-1"  # Auroraと同じリージョン
+rds = boto3.client("rds-data")
 
-    # Secrets ManagerからDB接続情報を取得
-    session = boto3.session.Session()
-    client = session.client(service_name='secretsmanager', region_name=region_name)
-    secret_value = client.get_secret_value(SecretId=secret_name)
-    secret = json.loads(secret_value['SecretString'])
+CLUSTER_ARN   = os.environ["CLUSTER_ARN"]     # Aurora Cluster ARN
+DB_SECRET_ARN = os.environ["DB_SECRET_ARN"]   # DB認証用 Secret ARN (username/password入り)
+DB_NAME       = os.environ.get("DB_NAME", "ouradb")
 
-    # DB接続情報
-    host = secret['host']
-    port = secret['port']
-    dbname = secret['dbname']
-    user = secret['username']
-    password = secret['password']
+def handler(event, context):
+    # デフォルトは直近7日分
+    days = int(event.get("days", 7)) if isinstance(event, dict) else 7
+    dtype = event.get("type", "all") if isinstance(event, dict) else "all"
 
-    # PostgreSQLに接続
-    try:
-        conn = psycopg2.connect(
-            host=host,
-            port=port,
-            dbname=dbname,
-            user=user,
-            password=password
-        )
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM your_table LIMIT 10;")  # ←ここはお好みで
-        rows = cur.fetchall()
-        columns = [desc[0] for desc in cur.description]  # カラム名取得
-        result = [dict(zip(columns, row)) for row in rows]  # リスト[辞書]化
-        
-        cur.close()
-        conn.close()
-        
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Content-Type': 'application/json'
-            },
-            'body': json.dumps(result)
-        }
+    where_clause = f"summary_date >= (CURRENT_DATE - INTERVAL '{days} days')"
+    params = []
+    if dtype != "all":
+        where_clause += " AND type = :tp"
+        params.append({"name":"tp", "value":{"stringValue":dtype}})
 
-    except Exception as e:
-        return {
-            'statusCode': 500,
-            'body': str(e)
-        }
+    sql = f"""
+        SELECT type, summary_date, payload->>'score' AS score
+        FROM oura.daily_summary
+        WHERE {where_clause}
+        ORDER BY summary_date DESC, type
+        LIMIT 50
+    """
+
+    resp = rds.execute_statement(
+        resourceArn=CLUSTER_ARN,
+        secretArn=DB_SECRET_ARN,
+        database=DB_NAME,
+        sql=sql,
+        parameters=params
+    )
+
+    # Data API の戻り値をパース
+    rows = []
+    for record in resp.get("records", []):
+        row = {}
+        if len(record) > 0 and "stringValue" in record[0]:
+            row["type"] = record[0]["stringValue"]
+        if len(record) > 1 and "stringValue" in record[1]:
+            row["summary_date"] = record[1]["stringValue"]
+        if len(record) > 2:
+            val = record[2].get("stringValue") or record[2].get("longValue")
+            row["score"] = val
+        rows.append(row)
+
+    return {
+        "count": len(rows),
+        "rows": rows
+    }

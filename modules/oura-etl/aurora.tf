@@ -22,6 +22,7 @@ resource "aws_rds_cluster" "aurora" {
     min_capacity = local.min_acu
     max_capacity = local.max_acu
   }
+  enable_http_endpoint = true
 }
 
 resource "aws_rds_cluster_instance" "aurora_instance" {
@@ -31,4 +32,16 @@ resource "aws_rds_cluster_instance" "aurora_instance" {
   engine             = aws_rds_cluster.aurora.engine
   engine_version     = aws_rds_cluster.aurora.engine_version
   publicly_accessible = false
+}
+
+resource "aws_secretsmanager_secret" "aurora_db_secret" {
+  name = "aurora/db-credentials"
+}
+
+resource "aws_secretsmanager_secret_version" "aurora_db_secret_v" {
+  secret_id     = aws_secretsmanager_secret.aurora_db_secret.id
+  secret_string = jsonencode({
+    username = local.db_user
+    password = random_password.db_password.result
+  })
 }
